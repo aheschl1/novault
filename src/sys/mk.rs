@@ -7,7 +7,7 @@ use zeroize::{ZeroizeOnDrop, Zeroizing};
 use anyhow::{Result, anyhow};
 
 
-#[derive(ZeroizeOnDrop)]
+#[derive(ZeroizeOnDrop, Clone)]
 pub struct CachedPassword {
     password: String,
     cache: Option<CachedPasswordInner>,
@@ -57,7 +57,7 @@ impl CachedPassword {
     }
 }
 
-#[derive(ZeroizeOnDrop)]
+#[derive(ZeroizeOnDrop, Clone)]
 struct CachedPasswordInner {
     salt: [u8; 16],
     password: [u8; 32]

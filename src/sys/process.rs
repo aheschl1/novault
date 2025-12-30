@@ -84,6 +84,13 @@ pub fn git_push_origin(root: &Path) -> Result<()> {
     Ok(())
 }
 
+pub fn git_add_commit_push(root: &Path) -> Result<()> {
+    git_add_all(root)?;
+    git_commit_all(root)?;
+    git_push_origin(root)?;
+    Ok(())
+}
+
 pub fn git_clone(root: &Path, url: &str) -> Result<()> {
     let status = Command::new("git")
         .args(vec![

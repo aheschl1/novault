@@ -20,8 +20,7 @@ use crate::{
         filter::{FilterDecision, NovFilter},
         mk::{CachedPassword, MasterVaultKey, WrappedKey},
         process::{
-            add_remote_origin, git_add_all, git_branch_main, git_clone, git_commit_all,
-            git_push_origin,
+            add_remote_origin, git_add_all, git_add_commit_push, git_branch_main, git_clone, git_commit_all, git_push_origin
         },
         statefile::StateFile,
         writer::{VaultWriter, decrypt},
@@ -400,11 +399,7 @@ pub fn sync(root: impl AsRef<Path>) -> Result<()> {
         },
         || {
             console_log!(Info, "Performing synchronization...");
-
-            git_add_all(root.as_ref())?;
-            git_commit_all(root.as_ref())?;
-            git_push_origin(root.as_ref())?;
-
+            git_add_commit_push(root.as_ref())?;
             Ok(())
         },
     )?;
@@ -475,13 +470,21 @@ fn open_internal(root: impl AsRef<Path>, password: &mut CachedPassword) -> Resul
                     if key.code == KeyCode::Char('s') {
                         console_log!(Info, "Synchronizing repository with remote...");
 
-                        seal_with_pwd(path, password)?;
-
-                        git_add_all(root.as_ref())?;
-                        git_commit_all(root.as_ref())?;
-                        git_push_origin(root.as_ref())?;
-
-                        unseal_with_pwd(path, password)?;
+                        require_seal_with_retrieval(
+                            root.as_ref(),
+                            |sf| match sf.get_remote()? {
+                                Some(_) => Ok(()),
+                                None => Err(anyhow!("The remote URL is not set. Please run link first.")),
+                            },
+                            |_| {
+                                Ok(password.clone())
+                            },
+                            || {
+                                console_log!(Info, "Performing synchronization...");
+                                git_add_commit_push(root.as_ref())?;
+                                Ok(())
+                            },
+                        )?;
 
                         console_log!(Info, "Synchronization complete...");
                     }
