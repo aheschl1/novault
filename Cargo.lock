@@ -754,7 +754,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "novault"
+name = "novovault"
 version = "1.0.0"
 dependencies = [
  "aes-gcm",

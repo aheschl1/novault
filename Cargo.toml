@@ -1,5 +1,5 @@
 [package]
-name = "novault"
+name = "novovault"
 version = "1.0.0"
 edition = "2024"
 description = "An encrypted store for notes"
