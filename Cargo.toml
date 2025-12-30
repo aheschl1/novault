@@ -2,6 +2,8 @@
 name = "novault"
 version = "1.0.0"
 edition = "2024"
+description = "An encrypted store for notes"
+license = "LICENSE.md"
 
 [dependencies]
 aes-gcm = { version = "0.10.3", features = ["stream"] }
